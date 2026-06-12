@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>B2 First Essay: Deforestation</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: #f3faf0;
+      font-family: 'Segoe UI', Roboto, sans-serif;
+      padding: 2rem 1.2rem;
+      color: #1d3e1d;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .card {
+      background: white;
+      border-radius: 28px;
+      padding: 2rem;
+      margin-bottom: 2rem;
+      border: 1px solid #d4e8d4;
+      box-shadow: 0 4px 14px rgba(80, 100, 70, 0.08);
+    }
+
+    h1 {
+      color: #2c6b2c;
+      font-size: 1.8rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .task-box {
+      background: #fefef7;
+      border-left: 4px solid #6fbf6f;
+      padding: 1.2rem;
+      margin: 1rem 0;
+      border-radius: 20px;
+    }
+
+    .note {
+      background: #eaf5ea;
+      padding: 0.8rem 1.2rem;
+      border-radius: 20px;
+      margin: 1rem 0;
+      font-size: 0.9rem;
+    }
+
+    label {
+      font-weight: 600;
+      display: block;
+      margin: 1rem 0 0.3rem 0;
+      color: #2a652a;
+    }
+
+    input, textarea {
+      width: 100%;
+      padding: 12px;
+      border-radius: 20px;
+      border: 1px solid #c2ddc2;
+      background: #fefef7;
+      font-family: inherit;
+      font-size: 0.95rem;
+      margin-bottom: 0.5rem;
+    }
+
+    input:focus, textarea:focus {
+      outline: none;
+      border-color: #6fbf6f;
+      background: white;
+    }
+
+    textarea {
+      min-height: 280px;
+      resize: vertical;
+    }
+
+    button {
+      background: #4caf50;
+      border: none;
+      padding: 12px 28px;
+      border-radius: 60px;
+      font-weight: 600;
+      font-size: 1rem;
+      color: white;
+      cursor: pointer;
+      transition: 0.2s;
+      margin-top: 0.5rem;
+    }
+
+    button:hover {
+      background: #3e9e42;
+      transform: translateY(-1px);
+    }
+
+    .status {
+      margin-top: 1rem;
+      padding: 0.8rem;
+      border-radius: 60px;
+      text-align: center;
+      font-weight: 500;
+      display: none;
+    }
+
+    .status.success {
+      background: #e0f2e0;
+      color: #2a6b2a;
+      border: 1px solid #9bcf9b;
+    }
+
+    .status.error {
+      background: #ffe6e5;
+      color: #c0452c;
+      border: 1px solid #e0b4b4;
+    }
+
+    .status.loading {
+      background: #eef5ec;
+      color: #4e724e;
+      display: block;
+    }
+
+    footer {
+      text-align: center;
+      font-size: 0.7rem;
+      color: #6f946f;
+      margin-top: 1rem;
+    }
+
+    hr {
+      border: none;
+      border-top: 1px solid #ddecdd;
+      margin: 1rem 0;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <div class="card">
+    <h1>B2 First (FCE) Essay</h1>
+    <p><strong>Topic:</strong> Protecting the World's Forests</p>
+
+    <div class="task-box">
+      <p>Many forests around the world are being destroyed for agricultural, commercial, or housing use without allowing time for the forests to regenerate themselves.</p>
+      <p><strong>What can be done to improve the situation?</strong></p>
+      <p><strong>Notes</strong><br>
+      • what contributes to the greenhouse effect<br>
+      • floods<br>
+      • (your own idea)</p>
+    </div>
+
+    <div class="note">
+      📌 Write 140–190 words. Give reasons for your point of view.
+    </div>
+
+    <form id="essayForm">
+      <label for="studentEmail">Your email address (for teacher feedback)</label>
+      <input type="email" id="studentEmail" name="studentEmail" placeholder="your.email@example.com" required>
+
+      <label for="essay">Your essay</label>
+      <textarea id="essay" name="essay" placeholder="Type your essay here..." required></textarea>
+
+      <button type="submit">✉️ Submit Essay to Teacher</button>
+    </form>
+
+    <div id="statusMessage" class="status"></div>
+  </div>
+  <footer>Your essay will be sent to your teacher by email. You will receive feedback later.</footer>
+</div>
+
+<script>
+  // REPLACE THIS WITH YOUR GOOGLE APPS SCRIPT WEB APP URL
+  const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec";
+
+  const form = document.getElementById("essayForm");
+  const statusDiv = document.getElementById("statusMessage");
+
+  form.addEventListener("submit", async function(event) {
+    event.preventDefault();
+
+    const studentEmail = document.getElementById("studentEmail").value.trim();
+    const essay = document.getElementById("essay").value.trim();
+
+    if (!studentEmail || !essay) {
+      showStatus("Please fill in both your email and your essay.", "error");
+      return;
+    }
+
+    if (essay.split(/\s+/).length < 50) {
+      showStatus("Your essay is too short. Please write at least 140 words.", "error");
+      return;
+    }
+
+    showStatus("Submitting...", "loading");
+
+    try {
+      const response = await fetch(GOOGLE_SCRIPT_URL, {
+        method: "POST",
+        mode: "no-cors",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          studentEmail: studentEmail,
+          essay: essay
+        })
+      });
+
+      // With no-cors, we cannot read the response.
+      // Assume success if no error occurred.
+      showStatus("✅ Essay submitted successfully! Your teacher will review it.", "success");
+      form.reset();
+    } catch (error) {
+      console.error("Submission error:", error);
+      showStatus("❌ Submission failed. Please try again or contact your teacher.", "error");
+    }
+  });
+
+  function showStatus(message, type) {
+    statusDiv.textContent = message;
+    statusDiv.className = `status ${type}`;
+    statusDiv.style.display = "block";
+
+    if (type === "success" || type === "error") {
+      setTimeout(() => {
+        statusDiv.style.display = "none";
+      }, 5000);
+    }
+  }
+</script>
+</body>
+</html>
